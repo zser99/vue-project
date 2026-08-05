@@ -18,7 +18,10 @@
       "Bash(npm run *)",
       "Bash(lsof -i :5173 -sTCP:LISTEN -t)",
       "Bash(node *)",
-      "Bash(curl -sL --max-time 25 -A 'Mozilla/5.0 \\(weather-app-school-project\\)' https://commons.wikimedia.org/wiki/Special:FilePath/Winter_snowfall_-_geograph.org.uk_-_7074913.jpg?width=1600 -o snow.jpg)"
+      "Bash(curl -sL --max-time 25 -A 'Mozilla/5.0 \\(weather-app-school-project\\)' https://commons.wikimedia.org/wiki/Special:FilePath/Winter_snowfall_-_geograph.org.uk_-_7074913.jpg?width=1600 -o snow.jpg)",
+      "Bash(gh repo *)",
+      "Bash(curl -s http://localhost:5173/ -o /dev/null -w \"%{http_code}\\\\n\")",
+      "Bash(curl -s http://localhost:5173/vue-project/ -o /dev/null -w \"%{http_code}\\\\n\")"
     ]
   }
 }

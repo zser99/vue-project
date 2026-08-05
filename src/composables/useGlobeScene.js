@@ -45,3 +45,4 @@ export function useGlobeScene(canvasRef, { cities, onPick }) {
     clearCountryHighlight: () => app?.clearCountryHighlight(),
   }
 }
+
