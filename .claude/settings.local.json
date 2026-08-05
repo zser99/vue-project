@@ -23,7 +23,15 @@
       "Bash(curl -s http://localhost:5173/ -o /dev/null -w \"%{http_code}\\\\n\")",
       "Bash(curl -s http://localhost:5173/vue-project/ -o /dev/null -w \"%{http_code}\\\\n\")",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)",
+      "Bash(curl -s \"https://api.github.com/repos/zser99/vue-project\")",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"https://api.github.com/repos/zser99/vue-project/actions/runs?per_page=3\")",
+      "Bash(lsof -i :5173 -sTCP:LISTEN)",
+      "Bash(node /private/tmp/claude-501/-Users-osanghyeon-weather-Vue-vue-project/568e8174-e52d-47fd-9fd2-fd98839f9507/scratchpad/check_favorites.mjs)",
+      "Bash(node /private/tmp/claude-501/-Users-osanghyeon-weather-Vue-vue-project/568e8174-e52d-47fd-9fd2-fd98839f9507/scratchpad/check_select.mjs)"
     ]
   }
 }

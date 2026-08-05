@@ -1,13 +1,15 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch, watchEffect } from 'vue'
 import { ElSkeleton, ElMessage } from 'element-plus'
 import { majorCities } from '@/data/majorCities'
 import { fetchWeatherByCoords, fetchWeatherByCityName } from '@/api/weatherApi'
 import { useWeatherCacheStore, coordKey } from '@/stores/weatherCacheStore'
+import { useFavoritesStore } from '@/stores/favoritesStore'
 import WeatherListCard from '@/components/weather/WeatherListCard.vue'
 import SearchBar from '@/components/weather/SearchBar.vue'
 
 const cacheStore = useWeatherCacheStore()
+const favoritesStore = useFavoritesStore()
 
 // cityId -> 정규화된 날씨 데이터
 const weatherMap = ref({})
@@ -25,6 +27,42 @@ const filteredWeatherList = computed(() => {
 
 // 도시 이름으로 검색한 결과 (majorCities 에 없는 도시일 수 있음) — Enter 로 실제 API 조회
 const searchResult = ref(null)
+
+// 사용자가 마지막으로 눌러본 카드 (실제 이동은 WeatherListCard 의 RouterLink 가 담당)
+const selectedCityInfo = ref(null)
+const handleSelectCard = (city) => {
+  selectedCityInfo.value = city
+}
+
+watch(selectedCityInfo, (city) => {
+  console.log('[watch] 선택된 도시:', city?.nameKo ?? city)
+})
+
+watchEffect(() => {
+  console.log('[watchEffect] 검색어:', searchQuery.value || '(비어 있음)')
+})
+
+// 즐겨찾기 도시의 날씨 — 이미 캐시된 게 있으면 재사용, 없으면 새로 조회
+const favoriteWeatherMap = ref({})
+const loadFavoriteWeather = async () => {
+  await Promise.all(
+    favoritesStore.favorites.map(async (fav) => {
+      const cached = cacheStore.recall(fav.key)
+      if (cached) {
+        favoriteWeatherMap.value[fav.key] = cached
+        return
+      }
+      try {
+        const weather = await fetchWeatherByCoords(fav.lat, fav.lon, fav.nameKo)
+        favoriteWeatherMap.value[fav.key] = weather
+        cacheStore.remember(fav.key, weather)
+      } catch (error) {
+        console.error('즐겨찾기 날씨를 불러오지 못했습니다.', error)
+      }
+    }),
+  )
+}
+watch(() => favoritesStore.favorites.length, loadFavoriteWeather, { immediate: true })
 
 const handleSearch = async () => {
   const cityName = searchQuery.value.trim()
@@ -69,6 +107,20 @@ onMounted(async () => {
       @keyup.enter="handleSearch"
     />
 
+    <div v-if="favoritesStore.favorites.length" class="favorites-section">
+      <h3 class="section-title">⭐ 즐겨찾기</h3>
+      <div class="card-grid">
+        <WeatherListCard
+          v-for="fav in favoritesStore.favorites"
+          :key="fav.key"
+          :city="{ id: fav.cityId ?? 'search', nameKo: fav.nameKo, lat: fav.lat, lon: fav.lon }"
+          :weather="favoriteWeatherMap[fav.key] ?? null"
+          :query="fav.cityId ? {} : { lat: fav.lat, lon: fav.lon, name: fav.nameKo }"
+          @click="handleSelectCard(fav)"
+        />
+      </div>
+    </div>
+
     <div v-if="searchResult" class="search-result">
       <h3 class="section-title">검색 결과</h3>
       <div class="card-grid">
@@ -76,6 +128,7 @@ onMounted(async () => {
           :city="{ id: 'search', nameKo: searchResult.name }"
           :weather="searchResult"
           :query="{ lat: searchResult.lat, lon: searchResult.lon, name: searchResult.name }"
+          @click="handleSelectCard({ nameKo: searchResult.name })"
         />
       </div>
     </div>
@@ -89,6 +142,7 @@ onMounted(async () => {
         :key="city.id"
         :city="city"
         :weather="weatherMap[city.id] ?? null"
+        @click="handleSelectCard(city)"
       />
     </div>
   </div>
@@ -145,6 +199,7 @@ onMounted(async () => {
   color: var(--text-secondary);
 }
 
+.favorites-section,
 .search-result {
   margin-bottom: 8px;
 }

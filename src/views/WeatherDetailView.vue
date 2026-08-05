@@ -6,6 +6,7 @@ import { majorCities } from '@/data/majorCities'
 import { fetchWeatherByCoords, getIconUrl } from '@/api/weatherApi'
 import { useTemperature } from '@/composables/useTemperature'
 import { useWeatherCacheStore, coordKey } from '@/stores/weatherCacheStore'
+import { useFavoritesStore, favoriteKey } from '@/stores/favoritesStore'
 
 const route = useRoute()
 // majorCities 에 없는 도시(검색 결과)는 route.query 에 실린 좌표로 임시 city 를 구성한다
@@ -68,6 +69,19 @@ const formatTime = (unixSeconds) => {
 
 const cacheStore = useWeatherCacheStore()
 
+const favoritesStore = useFavoritesStore()
+const favKey = computed(() => (city.value ? favoriteKey(city.value.id, city.value.lat, city.value.lon) : null))
+const toggleFavorite = () => {
+  if (!city.value) return
+  favoritesStore.toggleFavorite({
+    key: favKey.value,
+    cityId: city.value.id ?? null,
+    nameKo: city.value.nameKo,
+    lat: city.value.lat,
+    lon: city.value.lon,
+  })
+}
+
 onMounted(async () => {
   if (!city.value) {
     errorMessage.value = '존재하지 않는 도시입니다.'
@@ -108,7 +122,17 @@ onMounted(async () => {
     <p v-else-if="errorMessage" class="error">{{ errorMessage }}</p>
 
     <div v-else class="detail-card">
-      <h2>{{ city.nameKo }}</h2>
+      <h2>
+        {{ city.nameKo }}
+        <button
+          class="favorite-btn"
+          :class="{ active: favoritesStore.isFavorite(favKey) }"
+          aria-label="즐겨찾기 토글"
+          @click="toggleFavorite"
+        >
+          {{ favoritesStore.isFavorite(favKey) ? '★' : '☆' }}
+        </button>
+      </h2>
       <img :src="getIconUrl(weather.icon)" :alt="weather.description" />
       <p class="temp">{{ displayTemp }}{{ unitSymbol }}</p>
       <p class="desc">{{ weather.description }}</p>
@@ -260,9 +284,34 @@ onMounted(async () => {
 }
 
 .detail-card h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.3px;
+}
+
+.favorite-btn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.favorite-btn:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+
+.favorite-btn.active {
+  color: #ffd60a;
 }
 
 .detail-card img {

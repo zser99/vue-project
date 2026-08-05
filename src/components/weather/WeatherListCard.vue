@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { getIconUrl } from '@/api/weatherApi'
 import { useTemperature } from '@/composables/useTemperature'
+import { useFavoritesStore, favoriteKey } from '@/stores/favoritesStore'
 
 const props = defineProps({
   city: { type: Object, required: true }, // majorCities 의 항목 (id, nameKo, query)
@@ -13,6 +14,21 @@ const props = defineProps({
 // 카드에는 간단한 정보만: 온도는 computed 로 단위에 맞게 변환
 const tempCRef = computed(() => props.weather?.tempC)
 const { displayTemp, unitSymbol } = useTemperature(tempCRef)
+
+const favoritesStore = useFavoritesStore()
+const lat = computed(() => props.city.lat ?? props.query.lat)
+const lon = computed(() => props.city.lon ?? props.query.lon)
+const key = computed(() => favoriteKey(props.city.id, lat.value, lon.value))
+
+const toggleFavorite = () => {
+  favoritesStore.toggleFavorite({
+    key: key.value,
+    cityId: props.city.id !== 'search' ? props.city.id : null,
+    nameKo: props.city.nameKo,
+    lat: lat.value,
+    lon: lon.value,
+  })
+}
 </script>
 
 <template>
@@ -21,6 +37,14 @@ const { displayTemp, unitSymbol } = useTemperature(tempCRef)
     :to="{ name: 'weather-detail', params: { cityId: city.id }, query }"
     class="weather-card"
   >
+    <button
+      class="favorite-btn"
+      :class="{ active: favoritesStore.isFavorite(key) }"
+      aria-label="즐겨찾기 토글"
+      @click.stop.prevent="toggleFavorite"
+    >
+      {{ favoritesStore.isFavorite(key) ? '★' : '☆' }}
+    </button>
     <h3>{{ city.nameKo }}</h3>
 
     <template v-if="weather">
@@ -35,6 +59,7 @@ const { displayTemp, unitSymbol } = useTemperature(tempCRef)
 <style scoped>
 .weather-card {
   display: block;
+  position: relative;
   /* 목록 페이지만 더 밝은 글래스로 — 공용 --glass-bg 는 다른 화면(검색창·필 버튼 등)도 쓰므로 여기서만 override */
   background: rgba(255, 255, 255, 0.14);
   backdrop-filter: blur(18px) saturate(180%);
@@ -83,5 +108,30 @@ const { displayTemp, unitSymbol } = useTemperature(tempCRef)
   color: var(--text-tertiary);
   padding: 20px 0;
   font-size: 13px;
+}
+
+.favorite-btn {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.favorite-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.favorite-btn.active {
+  color: #ffd60a;
 }
 </style>
