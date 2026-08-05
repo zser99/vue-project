@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElSkeleton, ElMessage } from 'element-plus'
 import { majorCities } from '@/data/majorCities'
 import { fetchWeatherByCoords, fetchWeatherByCityName } from '@/api/weatherApi'
@@ -13,14 +13,28 @@ const cacheStore = useWeatherCacheStore()
 const weatherMap = ref({})
 const isLoading = ref(true)
 
-// 도시 이름으로 검색한 결과 (majorCities 에 없는 도시일 수 있음)
+// SearchBar 가 들고 있던 입력 상태를 부모(여기)로 끌어올림 — searchQuery prop + update-query emit 으로 연결
+const searchQuery = ref('')
+
+// 입력하는 대로 주요 도시 카드 그리드를 실시간으로 좁혀 보여준다 (검색어가 비면 전체 목록)
+const filteredWeatherList = computed(() => {
+  const query = searchQuery.value.trim()
+  if (!query) return majorCities
+  return majorCities.filter((city) => city.nameKo.includes(query))
+})
+
+// 도시 이름으로 검색한 결과 (majorCities 에 없는 도시일 수 있음) — Enter 로 실제 API 조회
 const searchResult = ref(null)
 
-const handleSearch = async (cityName) => {
+const handleSearch = async () => {
+  const cityName = searchQuery.value.trim()
+  if (!cityName) return
+
   try {
     const result = await fetchWeatherByCityName(cityName)
     searchResult.value = result
     cacheStore.remember(coordKey(result.lat, result.lon), result)
+    searchQuery.value = ''
   } catch (error) {
     searchResult.value = null
     ElMessage.error(error.message)
@@ -49,7 +63,11 @@ onMounted(async () => {
 
 <template>
   <div class="weather-list">
-    <SearchBar @search="handleSearch" />
+    <SearchBar
+      :search-query="searchQuery"
+      @update-query="searchQuery = $event"
+      @keyup.enter="handleSearch"
+    />
 
     <div v-if="searchResult" class="search-result">
       <h3 class="section-title">검색 결과</h3>
@@ -64,9 +82,10 @@ onMounted(async () => {
 
     <h3 v-if="searchResult" class="section-title">주요 도시</h3>
     <ElSkeleton v-if="isLoading" :rows="6" animated />
+    <p v-else-if="!filteredWeatherList.length" class="empty">검색 결과가 없어요.</p>
     <div v-else class="card-grid">
       <WeatherListCard
-        v-for="city in majorCities"
+        v-for="city in filteredWeatherList"
         :key="city.id"
         :city="city"
         :weather="weatherMap[city.id] ?? null"
@@ -128,6 +147,13 @@ onMounted(async () => {
 
 .search-result {
   margin-bottom: 8px;
+}
+
+.empty {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .card-grid {

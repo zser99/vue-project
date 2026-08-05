@@ -1,67 +1,46 @@
 <script setup>
-import { ref } from 'vue'
-import { ElInput, ElButton } from 'element-plus'
+// 부모로부터 현재 검색어를 props로 받는다
+defineProps({
+  searchQuery: {
+    type: String,
+    default: '',
+  },
+})
 
-const emit = defineEmits(['search'])
-const keyword = ref('')
-
-const handleSubmit = () => {
-  const cityName = keyword.value.trim()
-  if (!cityName) return
-  emit('search', cityName)
-  keyword.value = ''
-}
+// 입력값이 바뀌면 부모에게 새 검색어를 알려준다 (update-query emit)
+const emit = defineEmits(['update-query'])
 </script>
 
 <template>
-  <div class="search-bar">
-    <ElInput
-      v-model="keyword"
-      size="large"
-      clearable
-      placeholder="도시 이름을 입력하세요 (예: Seoul)"
-      @keyup.enter="handleSubmit"
-    >
-      <template #append>
-        <ElButton @click="handleSubmit">검색</ElButton>
-      </template>
-    </ElInput>
-  </div>
+  <input
+    type="text"
+    class="search-input"
+    :value="searchQuery"
+    @input="emit('update-query', $event.target.value)"
+    placeholder="검색할 도시 입력하세요."
+  />
 </template>
 
 <style scoped>
-.search-bar {
-  margin-bottom: 24px;
-}
-
-/* Element Plus 입력창을 글래스 필 스타일로 */
-.search-bar :deep(.el-input__wrapper) {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 999px 0 0 999px;
-  box-shadow: none;
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  /* --color-border 는 이 프로젝트 토큰에 없어서(테마엔 --glass-border) 무효 값이 되어
+     테두리가 안 보이던 것 — 실제 토큰으로 교체하고, 어두운 배경에서 읽히도록 배경/글자색도 추가 */
   border: 1px solid var(--glass-border);
-  border-right: none;
-  padding-left: 20px;
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  font-size: 15px;
 }
 
-.search-bar :deep(.el-input__wrapper.is-focus) {
+.search-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.search-input:focus {
+  outline: none;
   background: var(--glass-bg-hover);
   border-color: var(--glass-border-hover);
-}
-
-.search-bar :deep(.el-input-group__append) {
-  background: var(--glass-bg);
-  border-radius: 0 999px 999px 0;
-  box-shadow: none;
-  border: 1px solid var(--glass-border);
-  border-left: none;
-  color: var(--text-primary);
-}
-
-.search-bar :deep(.el-input-group__append .el-button) {
-  color: var(--text-primary);
-  font-weight: 600;
 }
 </style>
