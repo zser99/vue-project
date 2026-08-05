@@ -1,0 +1,84 @@
+/* 앱 전역 디자인 토큰 — 지구본 화면의 다크 우주 + 글래스 감성을 전 페이지에 통일 */
+:root {
+  --bg-deep: #05070f;
+  --bg-space: radial-gradient(ellipse at 30% 15%, #131b2e 0%, #05070f 70%);
+
+  --glass-bg: rgba(255, 255, 255, 0.08);
+  --glass-bg-hover: rgba(255, 255, 255, 0.16);
+  --glass-bg-strong: rgba(20, 25, 40, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-border-hover: rgba(255, 255, 255, 0.3);
+
+  --text-primary: #f5f5f7;
+  --text-secondary: rgba(245, 245, 247, 0.65);
+  --text-tertiary: rgba(245, 245, 247, 0.45);
+
+  --radius-card: 24px;
+  --radius-pill: 999px;
+  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'SF Pro Display',
+    'Apple SD Gothic Neo',
+    'Pretendard',
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+/* 공용 글래스 유틸리티 */
+.glass-panel {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.glass-pill {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.glass-pill:hover {
+  background: var(--glass-bg-hover);
+}

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs -I{} sh -c 'echo ==={}===; cat {}')",
+      "Bash(lsof -ti:5173 -sTCP:LISTEN)",
+      "Bash(xargs -r kill)",
+      "Bash(nohup npm run dev)",
+      "Bash(disown)",
+      "Bash(timeout 30 bash -c 'until curl -sf http://localhost:5173 >/dev/null; do sleep 1; done')",
+      "Bash(curl -sf http://localhost:5173)",
+      "Bash(break)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/src/main.js)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/src/views/WeatherListView.vue)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/src/views/WeatherDetailView.vue)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/src/components/weather/SearchBar.vue)",
+      "Bash(npm run *)",
+      "Bash(lsof -i :5173 -sTCP:LISTEN -t)",
+      "Bash(node *)",
+      "Bash(curl -sL --max-time 25 -A 'Mozilla/5.0 \\(weather-app-school-project\\)' https://commons.wikimedia.org/wiki/Special:FilePath/Winter_snowfall_-_geograph.org.uk_-_7074913.jpg?width=1600 -o snow.jpg)"
+    ]
+  }
+}
