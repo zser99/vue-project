@@ -39,6 +39,13 @@ three.js가 포함된 `GlobeView` 청크가 커서 뜨는 550KB 경고는 정상
 - **로딩·에러 처리**: [`WeatherListView.vue`](src/views/WeatherListView.vue#L16)·[`WeatherDetailView.vue`](src/views/WeatherDetailView.vue#L22) 모두 `isLoading`+`ElSkeleton`으로 로딩을, `ElMessage.error`/`errorMessage`로 실패를 사용자에게 안내합니다.
 - **네이밍**: [`WeatherListView.vue`](src/views/WeatherListView.vue)의 `filteredWeatherList`·`selectedCityInfo`·`favoriteWeatherMap`, [`geoMath.js`](src/three/globe/geoMath.js)의 `latLonToVector3`처럼 이름만으로 역할이 드러나도록 지었습니다.
 
+## 어려웠던점
+### 1~3일차
+- 목표를 순수 손코딩으로 최소한의 기능을 갖춘 날씨 어플리케이션 구현을 목표로 Vue.js 문법학습에 매진하였습니다. v-for 에서 한번 막히고(키 바인딩), 라우터에서 파일분할하고 컴포넌트 분리 먗 재사용을 구현, prop, emmit등에서 시간내에 못따라갈것 같아 3일차 밤부터 과감하게 생성형 AI의 도움을 받기 시작했습니다.
+### 4일차
+- 가장 어려웠던 점은 돈(?)이었습니다. 프로모션으로 받은 클로드 100달러어치 크레딧 중에서 3시간만에 65달러를 소진하였습니다.(웃음)
+- 농담이고 가장 어려운점은 도시 카드배너 클릭시 애니메이션 연출에서 정체모를 애니메이션 시간축 오차로 인해 그냥 이미지 렌더링으로 때웠습니다.
+
 ## Recommended IDE Setup
 
 [VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
