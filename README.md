@@ -1,6 +1,7 @@
 # 오늘의 날씨
 
-Vue 3(Composition API) + Vite + Pinia + Vue Router + three.js로 만든 날씨 앱입니다. 홈은 풀스크린 3D 지구본이고, 목록/상세 페이지에서 실제 OpenWeatherMap 데이터를 보여줍니다.
+Vue 3(Composition API) + Vite + Pinia + Vue Router + three.js로 만든 날씨 앱입니다. 홈은 풀스크린 3D 지구본이고, 목록/상세 페이지에서 실제 OpenWeatherMap 날씨 데이터를 보여줍니다.
+지구본 모델은 three.js라이브러리로 구현하였습니다.(https://threejs.org)
 
 ## 구현한 기능
 
